@@ -1,1 +1,39 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/your-username/flask-app.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'docker build -t flask-app .'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'docker run --rm flask-app pytest'
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                withDockerRegistry([credentialsId: 'docker-hub-credentials', url: '']) {
+                    sh 'docker tag flask-app your-dockerhub-username/flask-app:latest'
+                    sh 'docker push your-dockerhub-username/flask-app:latest'
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh 'kubectl apply -f deployment/deployment.yaml'
+            }
+        }
+    }
+}
 
