@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: venky-harness-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: venky-harness
+  template:
+    metadata:
+      labels:
+        app: venky-harness
+    spec:
+      containers:
+      - name: venky-harness
+        image: 207567757006.dkr.ecr.us-east-1.amazonaws.com/venky/harness:latest
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: venky-harness-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: venky-harness
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
