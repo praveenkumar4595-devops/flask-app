@@ -16,7 +16,7 @@ spec:
       - name: venky-harness
         image: 207567757006.dkr.ecr.us-east-1.amazonaws.com/venky/harness:latest
         ports:
-        - containerPort: 80
+        - containerPort: 5000
 ---
 apiVersion: v1
 kind: Service
