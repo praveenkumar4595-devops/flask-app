@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: venky-harness
-        image: 207567757006.dkr.ecr.us-east-1.amazonaws.com/venky/harness:latest
+        image: 207567757006.dkr.ecr.us-east-1.amazonaws.com/venky/harness:venky
         ports:
         - containerPort: 5000
 ---
