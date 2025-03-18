@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: venky-harness
-        image: docker pull venkateshsarapu/image-updater:4
+        image: image-updater:4
         ports:
         - containerPort: 5000
 ---
