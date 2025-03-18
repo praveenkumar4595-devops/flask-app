@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: venky-harness
-        image: venkateshsarapu/image-updater::${pipeline.sequenceId}
+        image: venkateshsarapu/image-updater:${pipeline.sequenceId}
         ports:
         - containerPort: 5000
 ---
