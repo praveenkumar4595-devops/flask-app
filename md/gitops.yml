@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: venky-harness
-        image: "{{ .Values.image.repository }}" 
+        image: "{{ <+serviceVariables.image> }}" 
         ports:
         - containerPort: 5000
 ---
