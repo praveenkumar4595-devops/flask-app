@@ -2,9 +2,10 @@ from flask import Flask
 
 app = Flask(__name__)
 
-@app.route('/')
+@app.route("/")
 def home():
-    return "Hello Praveen, Flask App running on K8's using Harness!"
+    return "Hello, Flask App running on Docker!"
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
