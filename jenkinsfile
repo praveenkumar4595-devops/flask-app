@@ -1,23 +1,56 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_USERNAME = 'praveenbudumuru'  // Replace with your DockerHub username
+        IMAGE_NAME = 'flask-app'
+    }
+
     stages {
-        stage('Checkout') {
+        stage('1. Checkout Code') {
             steps {
-                git 'https://github.com/venkateshsarapu/flask-app.git'
+                git branch: 'main', url: 'https://github.com/praveenkumar4595-devops/flask-app.git'
             }
         }
 
-        stage('Build') {
+        stage('2. Build Docker Image') {
             steps {
-                sh 'docker build -t flask-app .'
+                script {
+                    def imageTag = "${DOCKER_USERNAME}/${IMAGE_NAME}:${BUILD_NUMBER}"
+                    sh "docker build -t ${imageTag} ."
+                }
             }
         }
 
-        stage('Test') {
+        stage('3. Push to Docker Hub') {
             steps {
-                sh 'docker run --rm flask-app pytest'
+                script {
+                    def imageTag = "${DOCKER_USERNAME}/${IMAGE_NAME}:${BUILD_NUMBER}"
+                    def latestTag = "${DOCKER_USERNAME}/${IMAGE_NAME}:latest"
+
+                    // Ensure correct credentials usage
+                    withCredentials([usernamePassword(credentialsId: 'hub_creds', usernameVariable: 'docker_user', passwordVariable: 'docker_pass')]) {
+                        // Docker login securely without interpolation
+                        sh """
+                            echo \${docker_pass} | docker login -u \${docker_user} --password-stdin
+                        """
+
+                        // Tag the image with 'latest' tag
+                        sh "docker tag ${imageTag} ${latestTag}"
+
+                        // Push both the image and the latest tag to Docker Hub
+                        sh "docker push ${imageTag}"
+                        sh "docker push ${latestTag}"
+                    }
+                }
+            }
+        }
+
+        stage('4. Cleanup Docker Images') {
+            steps {
+                sh "docker image prune -af"
             }
         }
     }
 }
+
