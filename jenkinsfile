@@ -32,11 +32,13 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'hub_creds', usernameVariable: 'docker_user', passwordVariable: 'docker_pass')]) {
                         // Docker login securely without interpolation
                         sh """
-                            echo \$docker_pass | docker login -u \$docker_user --password-stdin
+                            echo \${docker_pass} | docker login -u \${docker_user} --password-stdin
                         """
 
-                        // Tag and push the Docker image
+                        // Tag the image with 'latest' tag
                         sh "docker tag ${imageTag} ${latestTag}"
+
+                        // Push both the image and the latest tag to Docker Hub
                         sh "docker push ${imageTag}"
                         sh "docker push ${latestTag}"
                     }
@@ -47,21 +49,7 @@ pipeline {
         stage('4. Cleanup Docker Images') {
             steps {
                 sh "docker image prune -af"
-            }
-        }
 
-        stage('5. Deploy to Server') {
-            steps {
-                sshagent(['your-server-ssh-credentials-id']) {
-                    sh '''
-                    ssh -o StrictHostKeyChecking=no user@server-ip << EOF
-                        docker pull praveenbudumuru/flask-app:latest
-                        docker stop flask-container || true
-                        docker rm flask-container || true
-                        docker run -d --name flask-container -p 80:5000 praveenbudumuru/flask-app:latest
-                    EOF
-                    '''
-                }
             }
         }
     }
